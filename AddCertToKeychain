@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Use of this file is at your own risk.
+
+# Variable
+certLocation="/path/to/cert"
+keyChain="/Library/Keychains/System.keychain"
+
+# Add Cert(s) to System Certificate Store
+security add-trusted-cert -d -r trustRoot -k "$keyChain" "$certLocation"
