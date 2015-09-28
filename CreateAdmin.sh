@@ -3,12 +3,12 @@
 #Variables
 OSVer=$(sw_vers -productVersion | awk -F. '{print $2}')
 HostName=`scutil --get ComputerName`
-AdminName=""
-AdminPassword=""
+AdminName="YOURADMIN"
+AdminPassword="YOURP@55W0RD"
 AdminHome="/var/.$AdminName"
 AdminUID="500"
 AdminShell="/bin/bash"
-AdminHidden=true
+AdminHidden=true # To be changed if Admin should be hidden
 dsclUser="/Users/"$AdminName
 
 # Add admin user. All users <500 are automatically hidden
