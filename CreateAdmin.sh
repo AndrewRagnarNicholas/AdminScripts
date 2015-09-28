@@ -2,20 +2,21 @@
 
 #Variables
 OSVer=$(sw_vers -productVersion | awk -F. '{print $2}')
-HostName=`scutil --get ComputerName`
 AdminName="YOURADMIN"
 AdminPassword="YOURP@55W0RD"
 AdminHome="/var/.$AdminName"
-AdminUID="500"
+AdminUID="499"
 AdminShell="/bin/bash"
 AdminHidden=true # To be changed if Admin should be hidden
 dsclUser="/Users/"$AdminName
 
-# Add admin user. All users <500 are automatically hidden
+# Add admin user. All users <500 are automatically hidden 
+# Finds the next available UID for assignment
 if [ $AdminHidden == true ]; then 
 	AdminUID=$(dscl . -list /Users UniqueID | sort -n -k 2 | awk 'BEGIN{i=400}{if($2>400 && $2<500)i=$2}END{print i+1}')
 else
 	AdminUID=$(dscl . -list /Users UniqueID | sort -n -k 2 | awk 'BEGIN{i=500}{if($2>500 && $2<1000)i=$2}END{print i+1}')
+	AdminHome="/Users/"$AdminName
 fi
 
 # Starting at 10.10 this got easier but 10.7-10.9 are supported in the old method
