@@ -16,6 +16,7 @@ fi
 
 ###
  
-"$jamfBinary/jamf" createconf "$jssAddress"
-"$jamfBinary/jamf" enroll -invitation "$inviteID"
-"$jamfBinary/jamf" recon -endUsername
+"$jamfBinary" createconf -k -url "$jssAddress"
+"$jamfBinary" enroll -invitation "$inviteID" -no recon
+"$jamfBinary" recon -endUsername
+"$jamfBinary" manage
