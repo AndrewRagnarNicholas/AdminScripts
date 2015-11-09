@@ -18,5 +18,5 @@ fi
  
 "$jamfBinary" createconf -k -url "$jssAddress"
 "$jamfBinary" enroll -invitation "$inviteID" -noRecon
-"$jamfBinary" recon -endUsername
+"$jamfBinary" recon -endUsername "$currentUser"
 "$jamfBinary" manage
