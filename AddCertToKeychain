@@ -3,8 +3,17 @@
 # Use of this file is at your own risk.
 
 # Variable
-certLocation="/path/to/cert"
+rootCert="/path/to/cert"
+intermediateCert'"/path/to/cert"
 keyChain="/Library/Keychains/System.keychain"
 
 # Add Cert(s) to System Certificate Store
-security add-trusted-cert -d -r trustRoot -k "$keyChain" "$certLocation"
+# If cert is a Root Cert
+if [ "$rootCert" != "" ]; then
+	security add-trusted-cert -d -r trustRoot -k "$keyChain" "$rootCert"
+fi
+
+# If cert is an intermediate certificate
+if [ "$intermediateCert" != "" ]; then
+	security add-trusted-cert -d -r trustAsRoot -k "$keyChain" "$intermediateCert"
+fi
