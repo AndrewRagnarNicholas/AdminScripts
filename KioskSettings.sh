@@ -89,7 +89,7 @@ defaults write /Library/Preferences/.GlobalPreferences com.apple.autologout.Auto
 echo "Autologin enabled for $kioskAccount" >> $logFile
 
 ## Generic settings
-# Set timezone to Chicago
+# Set timezone to Desired time
 systemsetup -settimezone $timeZone 
 echo "Timezone Set to $timeZone" >> $logFile
 
