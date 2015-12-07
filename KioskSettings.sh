@@ -44,7 +44,6 @@ if [[ $OSVer -ge "10" ]]; then
 	if [ "$kioskAccountTest" == "" ]; then
 		sysadminctl -addUser $kioskAccount -fullName "$kioskAccount" -password "$kioskPassword" -home "$kioskHome"
 		createhomedir -c > /dev/null
-		
 		echo "Kiosk Account added" >> $logFile
 	else
 		echo "Kiosk Account exists" >> $logFile
@@ -89,17 +88,15 @@ defaults write /Library/Preferences/.GlobalPreferences com.apple.autologout.Auto
 #password needs to be delivered via captured or edited /etc/kcpassword file
 echo "Autologin enabled for $kioskAccount" >> $logFile
 
-#ScreenSaver Settings
-# Disable ScreenSaver
-osascript -e 'tell application "System Events" to set delay interval of screen saver preferences to 0'
-# Disable Account Prompting
-osascript -e 'tell application "System Events" to set require password to wake of security preferences to false'
-
-
 ## Generic settings
 # Set timezone to Chicago
 systemsetup -settimezone $timeZone 
 echo "Timezone Set to $timeZone" >> $logFile
+
+# Turn off Screen Saver and Screen Saver Lock
+defaults write /Library/Preferences/com.apple.screensaver.plist askForPassword 0
+defaults -currentHost write com.apple.screensaver idleTime 0
+echo "Kiosk Account screensaver disabled"
 
 # Enable Remote Access
 /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -allowAccessFor -specifiedUsers 
