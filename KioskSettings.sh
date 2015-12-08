@@ -1,9 +1,8 @@
 #!/bin/sh
 
 # 
-# Mac Mini Kiosk Settings
+# CityTech Mac Mini Settings
 # ARN 12.02.2015
-# Use at your own risk. I assume no responsibility for loss or damage caused by this script
 # 
 
 ## Variables ##
@@ -20,9 +19,9 @@ adminHome="/Users/$adminAccount"
 adminAccountTest=`dscl . -list /Users | grep $adminAccount`
 #System Variables
 OSVer=$(sw_vers -productVersion | awk -F. '{print $2}')
-logFile="/var/log/miniSettings.log"
+logFile="/var/log/kioskSettings.log"
 timeZone="America/Chicago"
-
+hardwareUUID=$(system_profiler SPHardwareDataType | grep UUID | awk 'BEGIN {FS=": "} {print $2}')
 # Create the Logfile and timestamp it
 touch $logFile
 echo `date +%Y%m%d%H%M` >> $logFile
@@ -34,7 +33,7 @@ fi
 
 ## CreateAccounts ##
 if [[ $OSVer -ge "10" ]]; then
-	if [ "$adminAccounTest" == "" ]; then
+	if [ "$adminAccountTest" == "" ]; then
 		sysadminctl -addUser $adminAccount -fullName "$adminAccount" -password "$adminPassword" -home "$adminHome" -admin
 		createhomedir -c > /dev/null
 		echo "Admin Account Added" >> $logFile
@@ -85,7 +84,7 @@ defaults write /Library/Preferences/.GlobalPreferences com.apple.userspref.Disab
 defaults write /Library/Preferences/com.apple.loginwindow "autoLoginUser" "$kioskAccount"
 defaults write /Library/Preferences/com.apple.loginwindow.plist "autoLoginUserUID" "$kioskAccountUID"
 defaults write /Library/Preferences/.GlobalPreferences com.apple.autologout.AutoLogOutDelay -int 0
-#password needs to be delivered via captured or edited /etc/kcpassword file
+# password needs to be delivered via captured or edited /etc/kcpassword file (account UID's must match!)
 echo "Autologin enabled for $kioskAccount" >> $logFile
 
 ## Generic settings
@@ -93,10 +92,17 @@ echo "Autologin enabled for $kioskAccount" >> $logFile
 systemsetup -settimezone $timeZone 
 echo "Timezone Set to $timeZone" >> $logFile
 
-# Turn off Screen Saver and Screen Saver Lock
-defaults write /Library/Preferences/com.apple.screensaver.plist askForPassword 0
-defaults -currentHost write com.apple.screensaver idleTime 0
-echo "Kiosk Account screensaver disabled"
+# Turn off creen Saver Lock
+defaults write "/Users/$kioskAccount/Library/Preferences/com.apple.screensaver" askForPassword 0
+chown "$kioskAccount" "$kioskHome/Library/Preferences/com.apple.screensaver.plist"
+echo "Kiosk Account screensaver lock disabled" >> $logFile
+
+# Turn off Screen Saver
+/usr/libexec/PlistBuddy -c "Delete idleTime" "$kioskHome/Library/Preferences/ByHost/com.apple.screensaver.$hardwareUUID.plist"
+/usr/libexec/PlistBuddy -c "Add idleTime integer 0" "$kioskHome/Library/Preferences/ByHost/com.apple.screensaver.$hardwareUUID.plist"
+plutil -convert xml1 "$kioskHome/Library/Preferences/ByHost/com.apple.screensaver.$hardwareUUID.plist"
+chown "$kioskAccount" "$kioskHome/Library/Preferences/ByHost/com.apple.screensaver.$hardwareUUID.plist"
+echo "Kiosk Account screensaver disabled" >> $logFile
 
 # Enable Remote Access
 /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -allowAccessFor -specifiedUsers 
@@ -109,3 +115,4 @@ systemsetup -setremotelogin on
 echo "Shell access enabled"  >> $logFile
 
 exit 0
+
