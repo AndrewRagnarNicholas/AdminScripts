@@ -1,0 +1,1 @@
+diskutil eraseDisk JHFS+ Macintosh\ HD /dev/disk0
